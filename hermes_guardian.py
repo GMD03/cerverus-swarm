@@ -16,13 +16,12 @@ from typing import List
 
 # Setup environment variables for camel-ai's underlying OpenAI client to use OpenRouter
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENROUTER_API_KEY", "")
-os.environ["OPENAI_API_BASE"] = "https://openrouter.ai/api/v1"
+os.environ["OPENAI_BASE_URL"] = "https://openrouter.ai/api/v1"
 
 # Import camel-ai after setting env vars
 from camel.agents import ChatAgent
 from camel.messages import BaseMessage
-from camel.models import ModelFactory
-from camel.types import ModelPlatformType, ModelType
+from camel.models import OpenAIModel
 
 
 class HermesGuardian:
@@ -36,24 +35,14 @@ class HermesGuardian:
     def _load_sensitive_strings(self) -> List[str]:
         """
         Build a list of strings that should never leave the local machine.
-        Includes all values from the .env file (except safe ones like model IDs).
         """
         secrets = []
-        safe_keys = {"OPENROUTER_MODEL_ID", "FLASK_APP", "FLASK_ENV", "AGENT_LOG_LEVEL"}
-        
-        try:
-            with open(".env", "r", encoding="utf-8") as f:
-                for line in f:
-                    line = line.strip()
-                    if line and not line.startswith("#") and "=" in line:
-                        key, val = line.split("=", 1)
-                        if key not in safe_keys and val:
-                            secrets.append(val)
-        except Exception as e:
-            print(f"⚠️ Hermes warning: Could not read .env for sanitization: {e}")
+        api_key = os.getenv("OPENROUTER_API_KEY")
+        if api_key and api_key != "your_openrouter_api_key_here":
+            secrets.append(api_key)
             
         # Add any hardcoded regex patterns we want to catch (e.g., typical password shapes)
-        # For Phase 3, we stick to exact matches from .env
+        # For Phase 3, we stick to exact matches from environment variables
         return sorted(secrets, key=len, reverse=True)  # Sort longest first to avoid partial matches
 
     def sanitize(self, text: str) -> str:
@@ -72,16 +61,8 @@ class HermesGuardian:
 
     def create_agent(self, role_name: str, system_prompt: str) -> ChatAgent:
         """Create a camel-ai ChatAgent configured for OpenRouter."""
-        # We use a custom model config to force the specific model ID
-        model_config_dict = {"model": self.model_id}
         
-        # We use ModelType.GPT_4o just as a placeholder enum so camel-ai is happy,
-        # but the model_config_dict overrides the actual model sent to the API.
-        model = ModelFactory.create(
-            model_platform=ModelPlatformType.OPENAI,
-            model_type=ModelType.GPT_4O,  # Placeholder, overridden by config
-            model_config_dict=model_config_dict
-        )
+        model = OpenAIModel(model_type=self.model_id, model_config_dict={})
 
         sys_msg = BaseMessage.make_assistant_message(role_name=role_name, content=system_prompt)
         
