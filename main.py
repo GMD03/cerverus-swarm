@@ -30,14 +30,16 @@ ONTOLOGY_PATH = os.getenv("OWL_ONTOLOGY_PATH", "./config/ontology.json")
 TARGET_APP_PATH = os.getenv("TARGET_APP_PATH", "./workspace/app.py")
 
 
+from hermes_guardian import HermesGuardian
+
 def validate_env():
     """Ensure required environment variables are set."""
     if not OPENROUTER_API_KEY or OPENROUTER_API_KEY == "your_openrouter_api_key_here":
-        print(" ERROR: OPENROUTER_API_KEY is not set in .env")
-        print(" Please add your OpenRouter API key to the .env file.")
+        print("❌ ERROR: OPENROUTER_API_KEY is not set in .env")
+        print("   Please add your OpenRouter API key to the .env file.")
         sys.exit(1)
-    print(f" API Key loaded (ends with ...{OPENROUTER_API_KEY[-6:]})")
-    print(f" Model: {OPENROUTER_MODEL_ID}")
+    print(f"✅ API Key loaded (ends with ...{OPENROUTER_API_KEY[-6:]})")
+    print(f"✅ Model: {OPENROUTER_MODEL_ID}")
 
 
 # ── File I/O helpers ────────────────────────────────────────────────
@@ -144,40 +146,7 @@ new rules to add to the knowledge base, formatted as:
 Your patches must be secure, follow best practices, and not break functionality."""
 
 
-def create_openrouter_client():
-    """Create an OpenAI-compatible client pointed at OpenRouter."""
-    from openai import OpenAI
-
-    client = OpenAI(
-        base_url="https://openrouter.ai/api/v1",
-        api_key=OPENROUTER_API_KEY,
-    )
-    return client
-
-
-def call_agent(client, system_prompt: str, user_message: str, agent_name: str) -> str:
-    """Send a message to an agent via OpenRouter and return the response."""
-    print(f"\n{'='*60}")
-    print(f">>> {agent_name} is working...")
-    print(f"{'='*60}")
-
-    try:
-        response = client.chat.completions.create(
-            model=OPENROUTER_MODEL_ID,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_message},
-            ],
-            temperature=0.3,
-            max_tokens=4096,
-        )
-        result = response.choices[0].message.content
-        print(f" {agent_name} completed ({len(result)} chars)")
-        return result
-
-    except Exception as e:
-        print(f" {agent_name} failed: {e}")
-        return f"ERROR: {agent_name} encountered an error: {e}"
+# We use Hermes Guardian to create and dispatch agents.
 
 
 # ── Main Orchestration Loop (Single-Pass) ───────────────────────────
@@ -208,8 +177,13 @@ def run_single_pass():
     known_vulns = ontology[0].get("known_vulnerabilities", [])
     print(f" Ontology: {len(known_vulns)} known vulnerabilities")
 
-    # ── Step 2: Create the LLM client
-    client = create_openrouter_client()
+    # ── Step 2: Initialize Hermes Guardian
+    hermes = HermesGuardian()
+
+    # Create the camel-ai agents via Hermes
+    builder_agent = hermes.create_agent("Builder Agent", BUILDER_SYSTEM_PROMPT)
+    red_team_agent = hermes.create_agent("Red Team Agent", RED_TEAM_SYSTEM_PROMPT)
+    blue_team_agent = hermes.create_agent("Blue Team Agent", BLUE_TEAM_SYSTEM_PROMPT)
 
     # ── Step 3: Builder Agent — Analyze the code
     builder_input = f"""Analyze the following Python source code:
@@ -220,10 +194,10 @@ def run_single_pass():
 
 Provide a thorough structural analysis."""
 
-    builder_output = call_agent(
-        client, BUILDER_SYSTEM_PROMPT, builder_input, "Builder Agent"
+    builder_output = hermes.dispatch(
+        builder_agent, builder_input, "Builder Agent"
     )
-    print(f"\n Builder Analysis Preview:\n{builder_output[:500]}...\n")
+    print(f"\n📋 Builder Analysis Preview:\n{builder_output[:500]}...\n")
 
     # ── Step 4: Red Team Agent — Find vulnerabilities
     red_team_input = f"""Here is the source code to audit:
@@ -241,8 +215,8 @@ Previously known vulnerabilities in our ontology:
 
 Perform a complete security audit. Find ALL vulnerabilities."""
 
-    red_team_output = call_agent(
-        client, RED_TEAM_SYSTEM_PROMPT, red_team_input, "Red Team Agent"
+    red_team_output = hermes.dispatch(
+        red_team_agent, red_team_input, "Red Team Agent"
     )
     print(f"\n🔴 Red Team Report Preview:\n{red_team_output[:500]}...\n")
 
@@ -262,8 +236,8 @@ For each vulnerability:
 2. Create a prevention rule for the ontology knowledge base.
 3. Output the ONTOLOGY UPDATE JSON at the end."""
 
-    blue_team_output = call_agent(
-        client, BLUE_TEAM_SYSTEM_PROMPT, blue_team_input, "Blue Team Agent"
+    blue_team_output = hermes.dispatch(
+        blue_team_agent, blue_team_input, "Blue Team Agent"
     )
     print(f"\n🔵 Blue Team Report Preview:\n{blue_team_output[:500]}...\n")
 

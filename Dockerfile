@@ -21,6 +21,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy project files into the container
 COPY main.py .
+COPY hermes_guardian.py .
 COPY workspace/ ./workspace/
 COPY config/ ./config/
 
