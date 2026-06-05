@@ -29,3 +29,6 @@ docker-compose.override.yml
 /data/*.db
 /logs/
 *.log
+
+# Private Internal Docs
+INTERNAL_DEV_GUIDE.md
