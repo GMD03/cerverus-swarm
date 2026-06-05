@@ -1,0 +1,4 @@
+flask==3.1.*
+camel-ai[all]
+openai
+python-dotenv

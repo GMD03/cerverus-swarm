@@ -1,0 +1,17 @@
+# ============================================================
+# Project Cerverus — Docker Compose
+# Orchestrates the sandbox container with volume mapping
+# ============================================================
+
+services:
+  cerverus-sandbox:
+    build: .
+    container_name: cerverus-sandbox
+    env_file: .env
+    volumes:
+      # Air-gapped volume mapping: agents can only touch these dirs
+      - ./workspace:/workspace/workspace
+      - ./config:/workspace/config
+    ports:
+      - "5000:5000"
+    restart: "no"
