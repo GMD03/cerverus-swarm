@@ -1,6 +1,10 @@
 [
-    {
-        "system_state": "initialized",
-        "known_vulnerabilities": []
-    }
+  {
+    "system_state": "audited",
+    "known_vulnerabilities": [
+      "DEBUG"
+    ],
+    "last_audit": "2026-06-05T08:14:29.190031+00:00",
+    "audit_model": "nvidia/nemotron-3-super-120b-a12b:free"
+  }
 ]
