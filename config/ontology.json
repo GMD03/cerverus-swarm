@@ -79,9 +79,87 @@
         "prevention": "Never run a debug\u2011enabled service on `0.0.0.0` or any externally reachable interface. Bind to localhost or a private network interface in development, and rely on a reverse proxy for external access in production with debug disabled.",
         "severity": "Medium",
         "detected_at": "2025-09-26T14:32:00Z"
+      },
+      {
+        "rule_id": "RULE-001",
+        "vulnerability_class": "Hardcoded Credentials",
+        "prevention": "Store credentials securely using environment variables or a secrets manager, and use strong password hashing (e.g., bcrypt) for authentication",
+        "severity": "Critical",
+        "detected_at": "2024-01-15T10:30:00Z"
+      },
+      {
+        "rule_id": "RULE-002",
+        "vulnerability_class": "SQL Injection",
+        "prevention": "Always use parameterized queries or prepared statements for database operations",
+        "severity": "Critical",
+        "detected_at": "2024-01-15T10:30:00Z"
+      },
+      {
+        "rule_id": "RULE-003",
+        "vulnerability_class": "Cross-Site Scripting (XSS)",
+        "prevention": "Escape all user input before outputting to HTML, JavaScript, or other contexts",
+        "severity": "Medium",
+        "detected_at": "2024-01-15T10:30:00Z"
+      },
+      {
+        "rule_id": "RULE-004",
+        "vulnerability_class": "Hardcoded Secret Key",
+        "prevention": "Set secret keys via environment variables with strong, random values; never hardcode in source code",
+        "severity": "High",
+        "detected_at": "2024-01-15T10:30:00Z"
+      },
+      {
+        "rule_id": "RULE-005",
+        "vulnerability_class": "Debug Mode Enabled in Production",
+        "prevention": "Disable debug mode in production; control via environment variable (e.g., FLASK_DEBUG=False)",
+        "severity": "High",
+        "detected_at": "2024-01-15T10:30:00Z"
+      },
+      {
+        "rule_id": "RULE-006",
+        "vulnerability_class": "Missing CSRF Protection",
+        "prevention": "Implement CSRF tokens for all state-changing operations (POST, PUT, DELETE) and validate them server-side",
+        "severity": "Medium",
+        "detected_at": "2024-01-15T10:30:00Z"
+      },
+      {
+        "rule_id": "RULE-007",
+        "vulnerability_class": "Verbose Error Messages",
+        "prevention": "Return generic error messages to users; log detailed errors internally for debugging",
+        "severity": "Medium",
+        "detected_at": "2024-01-15T10:30:00Z"
+      },
+      {
+        "rule_id": "RULE-008",
+        "vulnerability_class": "Sensitive Configuration Exposure",
+        "prevention": "Restrict access to debug endpoints; never expose secrets, keys, or internal configuration in responses",
+        "severity": "High",
+        "detected_at": "2024-01-15T10:30:00Z"
+      },
+      {
+        "rule_id": "RULE-009",
+        "vulnerability_class": "Missing HTTP Security Headers",
+        "prevention": "Implement security headers like CSP, X-Frame-Options, X-Content-Type-Options, and X-XSS-Protection",
+        "severity": "Low",
+        "detected_at": "2024-01-15T10:30:00Z"
+      },
+      {
+        "rule_id": "RULE-010",
+        "vulnerability_class": "Missing Rate Limiting",
+        "prevention": "Implement rate limiting on authentication and other sensitive endpoints to prevent brute-force attacks",
+        "severity": "Medium",
+        "detected_at": "2024-01-15T10:30:00Z"
+      },
+      {
+        "rule_id": "RULE-011",
+        "vulnerability_class": "Insecure Service Binding",
+        "prevention": "Bind development servers to localhost (127.0.0.1) only; use production WSGI servers (e.g., Gunicorn) for deployment",
+        "severity": "Medium",
+        "detected_at": "2024-01-15T10:30:00Z"
       }
     ],
-    "last_audit": "2026-06-08T00:50:46.615183+00:00",
-    "audit_model": "nvidia/nemotron-3-super-120b-a12b:free"
+    "last_audit": "2026-06-08T01:14:43.951356+00:00",
+    "audit_model": "nvidia/nemotron-3-super-120b-a12b:free",
+    "audit_cycle": 1
   }
 ]
