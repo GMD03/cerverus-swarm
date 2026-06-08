@@ -1,6 +1,6 @@
 # ============================================================
 # Project Cerverus — Docker Compose
-# Orchestrates the sandbox container and dashboard
+# Orchestrates sandbox, dashboard, and landing page
 # ============================================================
 
 services:
@@ -36,3 +36,15 @@ services:
       - "8080:8080"
     restart: unless-stopped
     command: ["python", "dashboard.py"]
+
+  # ── Landing Page (recruiter-facing portfolio demo) ─────────
+  cerverus-landing:
+    image: python:3.11-slim
+    container_name: cerverus-landing
+    working_dir: /landing
+    volumes:
+      - ./landing:/landing:ro
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    command: ["python", "-m", "http.server", "3000"]
