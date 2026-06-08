@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cerverus Swarm — DevSecOps Dashboard for monitoring autonomous security agents">
+    <title>Cerverus Swarm — Dashboard</title>
+    <link rel="stylesheet" href="/static/dashboard.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+
+        <!-- ── Header ──────────────────────────────────────── -->
+        <header class="dashboard-header" id="dashboard-header">
+            <h1> Cerverus Swarm</h1>
+            <p class="subtitle">Autonomous DevSecOps Evaluation Dashboard</p>
+            <div class="header-meta">
+                <div class="meta-item">
+                    <span class="dot green" id="status-dot"></span>
+                    <span id="status-text">Loading...</span>
+                </div>
+                <div class="meta-item">
+                    <span class="dot blue"></span>
+                    <span id="model-text">—</span>
+                </div>
+                <div class="meta-item">
+                    <span class="dot amber"></span>
+                    <span id="timestamp-text">—</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ── Stats Grid ──────────────────────────────────── -->
+        <section class="stats-grid" id="stats-grid">
+            <div class="stat-card blue">
+                <div class="stat-label">Cycles Completed</div>
+                <div class="stat-value" id="stat-cycles">—</div>
+                <div class="stat-detail" id="stat-cycles-detail">No data yet</div>
+            </div>
+            <div class="stat-card red">
+                <div class="stat-label">Vulnerabilities Found</div>
+                <div class="stat-value" id="stat-vulns">—</div>
+                <div class="stat-detail" id="stat-vulns-detail">Last cycle</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-label">Ontology Rules</div>
+                <div class="stat-value" id="stat-rules">—</div>
+                <div class="stat-detail" id="stat-rules-detail">Knowledge base</div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-label">Hermes Redactions</div>
+                <div class="stat-value" id="stat-redactions">—</div>
+                <div class="stat-detail" id="stat-redactions-detail">This session</div>
+            </div>
+            <div class="stat-card amber">
+                <div class="stat-label">Final Status</div>
+                <div class="stat-value" id="stat-status">—</div>
+                <div class="stat-detail" id="stat-status-detail">—</div>
+            </div>
+        </section>
+
+        <!-- ── Cycle Progress ──────────────────────────────── -->
+        <section class="progress-section" id="progress-section">
+            <div class="progress-bar-container">
+                <h3>🔄 Cycle Progress</h3>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-label">
+                    <span id="progress-current">Cycle 0</span>
+                    <span id="progress-max">of 0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Two-Column Panels ───────────────────────────── -->
+        <section class="panel-grid">
+            <!-- Vulnerability Table -->
+            <div class="panel" id="vuln-panel">
+                <div class="panel-header">
+                    <h3>🔴 Red Team Findings</h3>
+                    <span class="status-badge vuln" id="vuln-count-badge">0 vulns</span>
+                </div>
+                <div class="panel-body">
+                    <div class="empty-state" id="vuln-empty">
+                        <div class="icon">🛡️</div>
+                        <p>No vulnerability data yet. Run the swarm to populate.</p>
+                    </div>
+                    <table class="vuln-table" id="vuln-table" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Severity</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vuln-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Ontology Rules -->
+            <div class="panel" id="ontology-panel">
+                <div class="panel-header">
+                    <h3>🧠 Ontology Rules (OWL Memory)</h3>
+                    <span class="status-badge running" id="rules-count-badge">0 rules</span>
+                </div>
+                <div class="panel-body" id="ontology-body">
+                    <div class="empty-state" id="ontology-empty">
+                        <div class="icon">📚</div>
+                        <p>No ontology rules yet. The Blue Team will populate these.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Cycle Timeline ──────────────────────────────── -->
+        <section class="panel-grid">
+            <div class="panel full-width" id="timeline-panel">
+                <div class="panel-header">
+                    <h3>📊 Cycle History</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="empty-state" id="timeline-empty">
+                        <div class="icon">⏳</div>
+                        <p>No cycle history yet.</p>
+                    </div>
+                    <div class="timeline" id="timeline" style="display: none;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Agent Logs ──────────────────────────────────── -->
+        <section class="agent-logs">
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>📋 Builder Agent Output</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="log-content" id="log-builder">Waiting for data...</div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>🔴 Red Team Agent Output</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="log-content" id="log-red-team">Waiting for data...</div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    <h3>🔵 Blue Team Agent Output</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="log-content" id="log-blue-team">Waiting for data...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ── Footer ──────────────────────────────────────── -->
+        <footer class="dashboard-footer">
+            <p>Cerverus Swarm v0.4.0 — System → Hermes Guardian → Nemotron 3 Super</p>
+            <p>Auto-refreshes every 10 seconds</p>
+        </footer>
+    </div>
+
+    <!-- ── JavaScript: Data Loading & Auto-Refresh ─────────── -->
+    <script>
+        const API_BASE = '';
+
+        async function fetchJSON(url) {
+            try {
+                const res = await fetch(API_BASE + url);
+                if (!res.ok) return null;
+                return await res.json();
+            } catch (e) {
+                console.warn('Fetch failed:', url, e);
+                return null;
+            }
+        }
+
+        function formatTimestamp(iso) {
+            if (!iso) return '—';
+            const d = new Date(iso);
+            return d.toLocaleString();
+        }
+
+        function severityClass(severity) {
+            if (!severity) return 'low';
+            const s = severity.toLowerCase();
+            if (s === 'critical') return 'critical';
+            if (s === 'high') return 'high';
+            if (s === 'medium') return 'medium';
+            return 'low';
+        }
+
+        async function refreshDashboard() {
+            const [report, ontology, history] = await Promise.all([
+                fetchJSON('/api/report'),
+                fetchJSON('/api/ontology'),
+                fetchJSON('/api/history'),
+            ]);
+
+            // ── Update header
+            if (report) {
+                document.getElementById('model-text').textContent = report.model || '—';
+                document.getElementById('timestamp-text').textContent = formatTimestamp(report.timestamp);
+                document.getElementById('status-text').textContent =
+                    report.final_clean ? '✅ Clean' : report.mode === 'cyclical' ? '🔄 Cyclical' : '📋 Single-Pass';
+            }
+
+            // ── Update stats
+            if (report && report.cycles && report.cycles.length > 0) {
+                const lastCycle = report.cycles[report.cycles.length - 1];
+                document.getElementById('stat-cycles').textContent = report.cycles.length;
+                document.getElementById('stat-cycles-detail').textContent =
+                    report.mode === 'cyclical' ? `of ${report.max_cycles || '?'} max` : 'Single pass';
+
+                document.getElementById('stat-vulns').textContent = lastCycle.vulnerabilities_found || 0;
+                document.getElementById('stat-vulns-detail').textContent = `Cycle ${lastCycle.cycle}`;
+
+                document.getElementById('stat-status').textContent = lastCycle.is_clean ? '✅' : '⚠️';
+                document.getElementById('stat-status-detail').textContent =
+                    lastCycle.is_clean ? 'All clear' : 'Vulnerabilities remain';
+
+                // Hermes redactions
+                const totalRedactions = report.cycles.reduce((sum, c) =>
+                    sum + (c.hermes_sanitization_events ? c.hermes_sanitization_events.length : 0), 0);
+                document.getElementById('stat-redactions').textContent = totalRedactions;
+                document.getElementById('stat-redactions-detail').textContent = 'Secrets intercepted';
+
+                // Progress bar
+                if (report.mode === 'cyclical' && report.max_cycles) {
+                    const pct = Math.min(100, (report.cycles.length / report.max_cycles) * 100);
+                    document.getElementById('progress-fill').style.width = pct + '%';
+                    document.getElementById('progress-current').textContent = `Cycle ${report.cycles.length}`;
+                    document.getElementById('progress-max').textContent = `of ${report.max_cycles}`;
+                } else {
+                    document.getElementById('progress-fill').style.width = '100%';
+                    document.getElementById('progress-current').textContent = 'Cycle 1';
+                    document.getElementById('progress-max').textContent = 'of 1 (single pass)';
+                }
+
+                // Agent logs (show last cycle)
+                document.getElementById('log-builder').textContent =
+                    lastCycle.builder_preview || 'No data';
+                document.getElementById('log-red-team').textContent =
+                    lastCycle.red_team_preview || 'No data';
+                document.getElementById('log-blue-team').textContent =
+                    lastCycle.blue_team_preview || 'No data';
+            }
+
+            // ── Ontology rules
+            if (ontology && ontology.length > 0 && ontology[0].known_vulnerabilities) {
+                const rules = ontology[0].known_vulnerabilities.filter(r => typeof r === 'object');
+                document.getElementById('stat-rules').textContent = rules.length;
+
+                if (rules.length > 0) {
+                    document.getElementById('ontology-empty').style.display = 'none';
+                    const body = document.getElementById('ontology-body');
+                    // Clear old rules (keep the empty state div)
+                    const existing = body.querySelectorAll('.rule-item');
+                    existing.forEach(el => el.remove());
+
+                    rules.forEach(rule => {
+                        const div = document.createElement('div');
+                        div.className = 'rule-item';
+                        div.innerHTML = `
+                            <span class="rule-id">${rule.rule_id || '—'}</span>
+                            <span class="badge ${severityClass(rule.severity)}" style="margin-left: 0.5rem;">${rule.severity || '—'}</span>
+                            <div class="rule-class">${rule.vulnerability_class || '—'}</div>
+                            <div class="rule-prevention">${rule.prevention || '—'}</div>
+                        `;
+                        body.appendChild(div);
+                    });
+
+                    document.getElementById('rules-count-badge').textContent = `${rules.length} rules`;
+                }
+            }
+
+            // ── Vulnerability table (parse from red team report)
+            if (report && report.cycles && report.cycles.length > 0) {
+                const lastCycle = report.cycles[report.cycles.length - 1];
+                const vulnCount = lastCycle.vulnerabilities_found || 0;
+
+                if (vulnCount > 0) {
+                    document.getElementById('vuln-empty').style.display = 'none';
+                    document.getElementById('vuln-table').style.display = 'table';
+                    document.getElementById('vuln-count-badge').textContent = `${vulnCount} vulns`;
+
+                    // Try to extract VULN IDs from the preview
+                    const tbody = document.getElementById('vuln-tbody');
+                    tbody.innerHTML = '';
+
+                    // Simple extraction of vulnerability patterns
+                    const fullReport = lastCycle.red_team_preview || '';
+                    const vulnPattern = /VULN-(\d{3})/g;
+                    const seen = new Set();
+                    let match;
+                    while ((match = vulnPattern.exec(fullReport)) !== null) {
+                        if (!seen.has(match[0])) {
+                            seen.add(match[0]);
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td style="font-family: var(--font-mono);">${match[0]}</td>
+                                <td>—</td>
+                                <td><span class="badge medium">Unknown</span></td>
+                                <td>${lastCycle.patch_applied ? '✅ Patched' : '⏳ Pending'}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        }
+                    }
+
+                    // If no IDs found in preview, show a summary row
+                    if (seen.size === 0) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td colspan="4" style="text-align: center; color: var(--text-muted);">
+                                ${vulnCount} vulnerabilities detected (see full report for details)
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+                } else {
+                    document.getElementById('vuln-empty').innerHTML = `
+                        <div class="icon">🎉</div>
+                        <p>No vulnerabilities found! Code is clean.</p>
+                    `;
+                    document.getElementById('vuln-count-badge').textContent = '0 vulns';
+                    document.getElementById('vuln-count-badge').className = 'status-badge clean';
+                }
+            }
+
+            // ── Cycle timeline
+            if (history && history.length > 0) {
+                document.getElementById('timeline-empty').style.display = 'none';
+                const tl = document.getElementById('timeline');
+                tl.style.display = 'block';
+                tl.innerHTML = '';
+
+                history.forEach(cycle => {
+                    const div = document.createElement('div');
+                    div.className = `timeline-item ${cycle.is_clean ? 'clean' : ''}`;
+                    div.innerHTML = `
+                        <div class="cycle-label">
+                            Cycle ${cycle.cycle}
+                            ${cycle.is_clean
+                            ? '<span class="status-badge clean" style="margin-left: 0.5rem;">Clean</span>'
+                            : `<span class="status-badge vuln" style="margin-left: 0.5rem;">${cycle.vulnerabilities_found} vulns</span>`
+                        }
+                        </div>
+                        <div class="cycle-detail">
+                            ${formatTimestamp(cycle.timestamp)}
+                            ${cycle.patch_applied ? ' · Patch applied' : ''}
+                        </div>
+                    `;
+                    tl.appendChild(div);
+                });
+            }
+        }
+
+        // Initial load
+        refreshDashboard();
+
+        // Auto-refresh every 10 seconds
+        setInterval(refreshDashboard, 10000);
+    </script>
+</body>
+
+</html>

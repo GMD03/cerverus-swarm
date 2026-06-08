@@ -1,9 +1,10 @@
 # ============================================================
 # Project Cerverus — Docker Compose
-# Orchestrates the sandbox container with volume mapping
+# Orchestrates the sandbox container and dashboard
 # ============================================================
 
 services:
+  # ── Agent Sandbox (runs the DevSecOps loop) ────────────────
   cerverus-sandbox:
     build: .
     container_name: cerverus-sandbox
@@ -15,3 +16,23 @@ services:
     ports:
       - "5000:5000"
     restart: "no"
+    # Default: runs main.py in single-pass mode
+    # Override for cyclical: docker-compose run cerverus-sandbox python main.py --mode cyclical
+
+  # ── Web Dashboard (read-only view of results) ──────────────
+  cerverus-dashboard:
+    build: .
+    container_name: cerverus-dashboard
+    env_file: .env
+    environment:
+      - CONFIG_DIR=/workspace/config
+      - DASHBOARD_PORT=8080
+    volumes:
+      # Read-only access to config for viewing reports
+      - ./config:/workspace/config:ro
+      - ./static:/workspace/static:ro
+      - ./templates:/workspace/templates:ro
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    command: ["python", "dashboard.py"]

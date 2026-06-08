@@ -2,9 +2,86 @@
   {
     "system_state": "audited",
     "known_vulnerabilities": [
-      "DEBUG"
+      "DEBUG",
+      {
+        "rule_id": "RULE-001",
+        "vulnerability_class": "Hardcoded Credentials",
+        "prevention": "Always store secrets (passwords, keys) outside of source code (e.g., environment variables, secret manager) and never keep credentials in plaintext; use strong, adaptive hashing (bcrypt, Argon2) for passwords.",
+        "severity": "Critical",
+        "detected_at": "2025-09-26T14:32:00Z"
+      },
+      {
+        "rule_id": "RULE-002",
+        "vulnerability_class": "SQL Injection",
+        "prevention": "Never concatenate user input into SQL strings. Always use parameterized queries (or an ORM) with placeholders for all dynamic values.",
+        "severity": "Critical",
+        "detected_at": "2025-09-26T14:32:00Z"
+      },
+      {
+        "rule_id": "RULE-003",
+        "vulnerability_class": "Cross-Site Scripting (Reflected)",
+        "prevention": "Always escape untrusted data before outputting it into HTML, JavaScript, CSS, or any other interpreter context. Use framework\u2011provided escaping helpers or a trusted templating engine that auto\u2011escapes.",
+        "severity": "Medium",
+        "detected_at": "2025-09-26T14:32:00Z"
+      },
+      {
+        "rule_id": "RULE-004",
+        "vulnerability_class": "Hardcoded Secret Key",
+        "prevention": "Never hardcode cryptographic secrets. Retrieve them from a secure secret store (environment variables, vault, KMS) and rotate them regularly.",
+        "severity": "High",
+        "detected_at": "2025-09-26T14:32:00Z"
+      },
+      {
+        "rule_id": "RULE-005",
+        "vulnerability_class": "Debug Mode Enabled in Production",
+        "prevention": "Disable debug mode in all non\u2011development environments. Configure debug flags via environment variables and never hard\u2011code `debug=True`.",
+        "severity": "High",
+        "detected_at": "2025-09-26T14:32:00Z"
+      },
+      {
+        "rule_id": "RULE-006",
+        "vulnerability_class": "Missing CSRF Protection",
+        "prevention": "Implement CSRF tokens on all state\u2011changing requests (POST, PUT, DELETE, PATCH). Validate the token server\u2011side before processing the request.",
+        "severity": "Medium",
+        "detected_at": "2025-09-26T14:32:00Z"
+      },
+      {
+        "rule_id": "RULE-007",
+        "vulnerability_class": "Verbose Error Messages",
+        "prevention": "Never expose internal exception details, queries, or stack traces to end\u2011users. Log errors securely and return generic messages to clients.",
+        "severity": "Medium",
+        "detected_at": "2025-09-26T14:32:00Z"
+      },
+      {
+        "rule_id": "RULE-008",
+        "vulnerability_class": "Sensitive Configuration Exposure",
+        "prevention": "Do not expose configuration, secrets, or debug information via public endpoints. If such endpoints are required for debugging, guard them behind strict authentication and enable them only in secure development environments.",
+        "severity": "High",
+        "detected_at": "2025-09-26T14:32:00Z"
+      },
+      {
+        "rule_id": "RULE-009",
+        "vulnerability_class": "Missing HTTP Security Headers",
+        "prevention": "Always deliver a baseline set of security headers (CSP, X\u2011Content\u2011Type\u2011Options, X\u2011Frame\u2011Options, Referrer\u2011Policy, HSTS when TLS is used) to mitigate common client\u2011side attacks.",
+        "severity": "Low",
+        "detected_at": "2025-09-26T14:32:00Z"
+      },
+      {
+        "rule_id": "RULE-010",
+        "vulnerability_class": "Missing Rate Limiting",
+        "prevention": "Apply rate limiting to authentication, password reset, and any endpoint susceptible to brute force or abuse. Use a strategy based on IP address, API key, or user identity, and adjust limits to balance security and usability.",
+        "severity": "Medium",
+        "detected_at": "2025-09-26T14:32:00Z"
+      },
+      {
+        "rule_id": "RULE-011",
+        "vulnerability_class": "Insecure Service Binding (Debug + 0.0.0.0)",
+        "prevention": "Never run a debug\u2011enabled service on `0.0.0.0` or any externally reachable interface. Bind to localhost or a private network interface in development, and rely on a reverse proxy for external access in production with debug disabled.",
+        "severity": "Medium",
+        "detected_at": "2025-09-26T14:32:00Z"
+      }
     ],
-    "last_audit": "2026-06-05T08:14:29.190031+00:00",
+    "last_audit": "2026-06-08T00:50:46.615183+00:00",
     "audit_model": "nvidia/nemotron-3-super-120b-a12b:free"
   }
 ]

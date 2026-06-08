@@ -22,8 +22,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project files into the container
 COPY main.py .
 COPY hermes_guardian.py .
+COPY dashboard.py .
 COPY workspace/ ./workspace/
 COPY config/ ./config/
+COPY templates/ ./templates/
+COPY static/ ./static/
 
 # Drop privileges to non-root user
 USER cerverus_user
