@@ -1,25 +1,19 @@
 {
   "mode": "single-pass",
-  "timestamp": "2026-06-08T02:48:26.612924+00:00",
+  "timestamp": "2026-06-08T03:35:03.397798+00:00",
   "model": "nvidia/nemotron-3-super-120b-a12b:free",
   "cycles": [
     {
       "cycle": 1,
-      "timestamp": "2026-06-08T02:48:26.612885+00:00",
+      "timestamp": "2026-06-08T03:35:03.397768+00:00",
       "model": "nvidia/nemotron-3-super-120b-a12b:free",
-      "vulnerabilities_found": 6,
-      "is_clean": false,
-      "patch_applied": true,
-      "builder_preview": "**STRUCTURAL ANALYSIS \u2013 Patched Flask Application (`workspace/app.py`)**\n\n---\n\n## 1. APPLICATION OVERVIEW\nThe file defines a small Flask web service that serves as a patched version of the original \u201cCerverus Target App\u201d. Its purpose is to demonstrate a secure baseline after fixing a number of common",
-      "red_team_preview": "VULN-001\nTYPE: Information Exposure (Password Hashes)\nSEVERITY: Critical\nLOCATION: /search endpoint (search_users function), lines 90-100 where query results are converted to dictionaries and returned.\nDESCRIPTION: The /search endpoint returns all columns of matched user records, including the passw",
-      "blue_team_preview": "```python\n\"\"\"\nworkspace/app.py \u2014 Patched Flask Application\n=============================================================\nThis is the patched version of the Cerverus Target App with security vulnerabilities fixed.\n\nVulnerabilities addressed:\n  1. Information Exposure (Password Hashes) -> removed pass",
-      "hermes_sanitization_events": [
-        {
-          "timestamp": "2026-06-08T02:48:26.515878+00:00",
-          "match_type": "regex_match",
-          "pattern": "Generic API Key Assignment"
-        }
-      ]
+      "vulnerabilities_found": 0,
+      "is_clean": true,
+      "patch_applied": false,
+      "builder_preview": "# Cerverus DevSecOps Swarm - Builder Agent Analysis\n\n## 1. APPLICATION OVERVIEW\nThis is a patched Flask web application designed as a security training target (Cerverus Target App). The application provides user authentication, search functionality, and a greeting endpoint. Key security improvements",
+      "red_team_preview": "CLEAN SCAN: No vulnerabilities detected.\n\nAfter thorough analysis of the provided patched Flask application source code and the Builder Agent's structural analysis, no security vulnerabilities remain. All previously identified issues from the ontology have been adequately addressed:\n\n1. **Hardcoded ",
+      "blue_team_preview": "Skipped (clean scan)",
+      "hermes_sanitization_events": []
     }
   ]
 }

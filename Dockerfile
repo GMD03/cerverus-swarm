@@ -19,10 +19,8 @@ WORKDIR /workspace
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files into the container
-COPY main.py .
-COPY hermes_guardian.py .
-COPY dashboard.py .
+# Copy project python files into the container
+COPY *.py .
 COPY workspace/ ./workspace/
 COPY config/ ./config/
 COPY templates/ ./templates/
