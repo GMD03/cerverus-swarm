@@ -156,9 +156,10 @@
         "prevention": "Bind development servers to localhost (127.0.0.1) only; use production WSGI servers (e.g., Gunicorn) for deployment",
         "severity": "Medium",
         "detected_at": "2024-01-15T10:30:00Z"
-      }
+      },
+      "DEBUG"
     ],
-    "last_audit": "2026-06-08T01:14:43.951356+00:00",
+    "last_audit": "2026-06-08T02:48:26.516189+00:00",
     "audit_model": "nvidia/nemotron-3-super-120b-a12b:free",
     "audit_cycle": 1
   }

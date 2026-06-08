@@ -1,38 +1,23 @@
 {
   "mode": "single-pass",
-  "timestamp": "2026-06-08T01:14:44.022934+00:00",
+  "timestamp": "2026-06-08T02:48:26.612924+00:00",
   "model": "nvidia/nemotron-3-super-120b-a12b:free",
   "cycles": [
     {
       "cycle": 1,
-      "timestamp": "2026-06-08T01:14:44.022904+00:00",
+      "timestamp": "2026-06-08T02:48:26.612885+00:00",
       "model": "nvidia/nemotron-3-super-120b-a12b:free",
-      "vulnerabilities_found": 11,
+      "vulnerabilities_found": 6,
       "is_clean": false,
       "patch_applied": true,
-      "builder_preview": "### STRUCTURAL ANALYSIS OF WORKSPACE/APP.PY\n\n---\n\n#### 1. APPLICATION OVERVIEW\nThis is a deliberately vulnerable Flask web application designed for security training/red team exercises. It simulates a simple user management system with the following core functionalities:\n- User authentication via ha",
-      "red_team_preview": "VULN-001\nTYPE: Hardcoded Credentials\nSEVERITY: Critical\nLOCATION: Lines defining ADMIN_USERNAME and ADMIN_PASSWORD (top of file) and used in /login route (lines 48-55)\nDESCRIPTION: The application uses hardcoded plaintext credentials for admin authentication, stored as constants in the source code.\n",
-      "blue_team_preview": "```python\n\"\"\"\nworkspace/app.py \u2014 Patched Flask Application\n=============================================================\nThis is the patched version of the Cerverus Target App with security vulnerabilities fixed.\n\nVulnerabilities addressed:\n  1. Hardcoded credentials -> replaced with database-backed",
+      "builder_preview": "**STRUCTURAL ANALYSIS \u2013 Patched Flask Application (`workspace/app.py`)**\n\n---\n\n## 1. APPLICATION OVERVIEW\nThe file defines a small Flask web service that serves as a patched version of the original \u201cCerverus Target App\u201d. Its purpose is to demonstrate a secure baseline after fixing a number of common",
+      "red_team_preview": "VULN-001\nTYPE: Information Exposure (Password Hashes)\nSEVERITY: Critical\nLOCATION: /search endpoint (search_users function), lines 90-100 where query results are converted to dictionaries and returned.\nDESCRIPTION: The /search endpoint returns all columns of matched user records, including the passw",
+      "blue_team_preview": "```python\n\"\"\"\nworkspace/app.py \u2014 Patched Flask Application\n=============================================================\nThis is the patched version of the Cerverus Target App with security vulnerabilities fixed.\n\nVulnerabilities addressed:\n  1. Information Exposure (Password Hashes) -> removed pass",
       "hermes_sanitization_events": [
         {
-          "timestamp": "2026-06-08T01:08:12.667875+00:00",
+          "timestamp": "2026-06-08T02:48:26.515878+00:00",
           "match_type": "regex_match",
-          "pattern": "Password in Config"
-        },
-        {
-          "timestamp": "2026-06-08T01:08:42.911747+00:00",
-          "match_type": "regex_match",
-          "pattern": "Password in Config"
-        },
-        {
-          "timestamp": "2026-06-08T01:10:32.943605+00:00",
-          "match_type": "regex_match",
-          "pattern": "Password in Config"
-        },
-        {
-          "timestamp": "2026-06-08T01:10:32.944796+00:00",
-          "match_type": "regex_match",
-          "pattern": "Password in Config"
+          "pattern": "Generic API Key Assignment"
         }
       ]
     }

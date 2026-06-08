@@ -4,17 +4,22 @@ workspace/app.py — Patched Flask Application
 This is the patched version of the Cerverus Target App with security vulnerabilities fixed.
 
 Vulnerabilities addressed:
-  1. Hardcoded credentials -> replaced with database-backed hashed passwords
-  2. SQL Injection -> replaced with parameterized queries
-  3. Reflected XSS -> escaped user input in HTML responses
-  4. Hardcoded secret key -> set via environment variable
-  5. Debug mode in production -> controlled by environment variable
-  6. Missing CSRF protection -> added CSRF tokens for login
-  7. Verbose error messages -> generic error responses
-  8. Sensitive config exposure -> restricted /debug/config to debug mode only
-  9. Missing HTTP security headers -> added via after_request hook
-  10. Missing rate limiting -> added to /login endpoint
-  11. Insecure service binding -> bind to 127.0.0.1 in debug mode
+  1. Information Exposure (Password Hashes) -> removed password hash from search results
+  2. Hardcoded Credentials -> replaced with environment variable-based passwords
+  3. Session Cookie Misconfiguration -> added HttpOnly and Secure flags
+  4. Rate Limiting Bypass (Multi-Worker) -> moved to shared database storage
+  5. Resource Exhaustion (Memory Leak) -> implemented periodic cleanup in DB
+  6. Inconsistent Secret Key -> made SECRET_KEY persistent across restarts in debug mode
+  7. SQL Injection -> already fixed via parameterized queries
+  8. Reflected XSS -> already fixed via input escaping
+  9. Hardcoded secret key -> already fixed via environment variable
+  10. Debug mode in production -> already fixed via environment variable
+  11. Missing CSRF protection -> already fixed via CSRF tokens
+  12. Verbose error messages -> already fixed via generic responses
+  13. Sensitive config exposure -> already fixed via debug-only endpoint
+  14. Missing HTTP security headers -> already fixed via after_request hook
+  15. Missing rate limiting -> now implemented with shared storage
+  16. Insecure service binding -> already fixed via debug-mode localhost binding
 """
 
 import sqlite3
@@ -27,20 +32,32 @@ from markupsafe import escape
 
 # ── Configuration from Environment ────────────────────────────────────
 app = Flask(__name__)
-# Use environment variable for secret key with strong fallback for development
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", secrets.token_hex(32))
+# Use environment variable for secret key with persistent fallback in debug mode
+secret_key = os.environ.get("SECRET_KEY")
+if secret_key is None:
+    if app.config.get("DEBUG", False):
+        # In debug mode, use a fixed key for consistency across restarts
+        [REDACTED]
+        app.logger.warning(
+            "Using default SECRET_KEY for development. "
+            "Set SECRET_KEY environment variable for production."
+        )
+    else:
+        raise RuntimeError("SECRET_KEY must be set in production")
+app.config["SECRET_KEY"] = secret_key
 # Control debug mode via environment variable (default: False for safety)
 app.config["DEBUG"] = os.environ.get("FLASK_DEBUG", "False").lower() in ("true", "1", "t")
+# Session cookie security settings
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SECURE"] = not app.config["DEBUG"]  # Secure only in production
 
 # ── Database Configuration ───────────────────────────────────────────
-DATABASE = ":memory:"
-
-# Rate limiting storage for login attempts (IP -> timestamps)
-login_attempts = {}
+# Use file-based database for shared state between workers
+DATABASE = os.environ.get("DATABASE_URL", "cerverus.db")
 
 # ── Database helpers ────────────────────────────────────────────────
 def get_db():
-    """Get or create an in-memory SQLite database connection."""
+    """Get or create a database connection."""
     db = getattr(g, "_database", None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
@@ -50,7 +67,8 @@ def get_db():
 
 
 def _init_db(db):
-    """Seed the database with sample data including password hashes."""
+    """Seed the database with sample data and create necessary tables."""
+    # Create users table
     db.execute(
         """
         CREATE TABLE IF NOT EXISTS users (
@@ -62,14 +80,39 @@ def _init_db(db):
         )
     """
     )
-    # Insert sample users with hashed passwords
-    # In production, these should be set via secure registration process
+    # Create login attempts table for rate limiting
+    db.execute(
+        """
+        CREATE TABLE IF NOT EXISTS login_attempts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ip TEXT NOT NULL,
+            attempt_time REAL NOT NULL
+        )
+    """
+    )
+    # Create index for efficient rate limiting lookups
+    db.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_login_attempts_ip_time 
+        ON login_attempts (ip, attempt_time)
+    """
+    )
+    
+    # Insert sample users with passwords from environment variables
     users = [
-        ("alice", "alice@example.com", "user", "alice_password"),
-        ("bob", "bob@example.com", "user", "bob_password"),
-        ("admin", "admin@cerverus.local", "admin", os.environ.get("ADMIN_PASSWORD", "admin_secure_password_change_me"))
+        ("alice", "alice@example.com", "user", os.environ.get("ALICE_PASSWORD")),
+        ("bob", "bob@example.com", "user", os.environ.get("BOB_PASSWORD")),
+        ("admin", "admin@cerverus.local", "admin", os.environ.get("ADMIN_PASSWORD"))
     ]
     for username, email, role, password in users:
+        if password is None:
+            # Generate a random password if not set via environment variable
+            password = secrets.token_urlsafe(16)
+            if app.config["DEBUG"]:
+                app.logger.warning(
+                    f"Generated temporary password for {username}: {password}. "
+                    "Set {username.upper()}_PASSWORD environment variable for production."
+                )
         hashed_pw = generate_password_hash(password)
         db.execute(
             "INSERT OR IGNORE INTO users (username, email, role, password) VALUES (?, ?, ?, ?)",
@@ -117,7 +160,7 @@ def login():
     Fixed login route with:
     - Hashed password verification via database
     - CSRF protection
-    - Rate limiting
+    - Rate limiting using shared database storage
     - Generic error messages
     """
     if request.method == "GET":
@@ -153,23 +196,30 @@ def login():
     if not token or token != session.get('csrf_token'):
         return jsonify({"error": "Invalid CSRF token"}), 400
 
-    # Rate limiting by IP
     ip = request.remote_addr
     current_time = time.time()
-    # Clean attempts older than 1 minute
-    if ip in login_attempts:
-        login_attempts[ip] = [t for t in login_attempts[ip] if current_time - t < 60]
-    else:
-        login_attempts[ip] = []
-    
-    if len(login_attempts[ip]) >= 5:
-        return jsonify({"error": "Too many login attempts. Please try again later."}), 429
-
-    username = request.form.get("username", "")
-    password = request.form.get("password", "")
-
     db = get_db()
+    
     try:
+        # Clean up old login attempts (older than 1 minute)
+        db.execute(
+            "DELETE FROM login_attempts WHERE attempt_time < ?",
+            (current_time - 60,)
+        )
+        
+        # Check rate limit: count attempts in last minute
+        cursor = db.execute(
+            "SELECT COUNT(*) FROM login_attempts WHERE ip = ?",
+            (ip,)
+        )
+        attempt_count = cursor.fetchone()[0]
+        
+        if attempt_count >= 5:
+            return jsonify({"error": "Too many login attempts. Please try again later."}), 429
+
+        username = request.form.get("username", "")
+        password = request.form.get("password", "")
+
         # Parameterized query to prevent SQL injection
         user = db.execute(
             "SELECT * FROM users WHERE username = ?", 
@@ -177,16 +227,24 @@ def login():
         ).fetchone()
         
         if user and check_password_hash(user['password'], password):
-            # Successful login: reset rate limit and rotate CSRF token
-            if ip in login_attempts:
-                del login_attempts[ip]
+            # Successful login: reset rate limit for this IP
+            db.execute(
+                "DELETE FROM login_attempts WHERE ip = ?",
+                (ip,)
+            )
+            db.commit()
             session['csrf_token'] = secrets.token_hex(16)  # Rotate token
             return jsonify({"message": "Login successful", "role": user['role']}), 200
         else:
             # Failed login: record attempt
-            login_attempts[ip].append(current_time)
+            db.execute(
+                "INSERT INTO login_attempts (ip, attempt_time) VALUES (?, ?)",
+                (ip, current_time)
+            )
+            db.commit()
             return jsonify({"error": "Invalid credentials"}), 401
-    except Exception:
+    except Exception as e:
+        app.logger.error(f"Login error: {e}")
         # Generic error message to avoid information leakage
         return jsonify({"error": "Authentication error"}), 500
 
@@ -196,12 +254,12 @@ def search_users():
     """
     Fixed search route with:
     - Parameterized queries to prevent SQL injection
-    - Generic error messages
+    - Exclusion of sensitive fields (password hash) from results
     """
     name = request.args.get("name", "")
 
     # Parameterized query to prevent SQL injection
-    query = "SELECT * FROM users WHERE username = ?"
+    query = "SELECT id, username, email, role FROM users WHERE username = ?"
     
     db = get_db()
     try:
