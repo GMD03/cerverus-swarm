@@ -64,7 +64,7 @@
         <!-- ── Cycle Progress ──────────────────────────────── -->
         <section class="progress-section" id="progress-section">
             <div class="progress-bar-container">
-                <h3>🔄 Cycle Progress</h3>
+                <h3> Cycle Progress</h3>
                 <div class="progress-track">
                     <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
                 </div>
@@ -80,12 +80,12 @@
             <!-- Vulnerability Table -->
             <div class="panel" id="vuln-panel">
                 <div class="panel-header">
-                    <h3>🔴 Red Team Findings</h3>
+                    <h3> Red Team Findings</h3>
                     <span class="status-badge vuln" id="vuln-count-badge">0 vulns</span>
                 </div>
                 <div class="panel-body">
                     <div class="empty-state" id="vuln-empty">
-                        <div class="icon">🛡️</div>
+                        <div class="icon"></div>
                         <p>No vulnerability data yet. Run the swarm to populate.</p>
                     </div>
                     <table class="vuln-table" id="vuln-table" style="display: none;">
@@ -105,12 +105,12 @@
             <!-- Ontology Rules -->
             <div class="panel" id="ontology-panel">
                 <div class="panel-header">
-                    <h3>🧠 Ontology Rules (OWL Memory)</h3>
+                    <h3> Ontology Rules (OWL Memory)</h3>
                     <span class="status-badge running" id="rules-count-badge">0 rules</span>
                 </div>
                 <div class="panel-body" id="ontology-body">
                     <div class="empty-state" id="ontology-empty">
-                        <div class="icon">📚</div>
+                        <div class="icon"></div>
                         <p>No ontology rules yet. The Blue Team will populate these.</p>
                     </div>
                 </div>
@@ -121,11 +121,11 @@
         <section class="panel-grid">
             <div class="panel full-width" id="timeline-panel">
                 <div class="panel-header">
-                    <h3>📊 Cycle History</h3>
+                    <h3> Cycle History</h3>
                 </div>
                 <div class="panel-body">
                     <div class="empty-state" id="timeline-empty">
-                        <div class="icon">⏳</div>
+                        <div class="icon"></div>
                         <p>No cycle history yet.</p>
                     </div>
                     <div class="timeline" id="timeline" style="display: none;"></div>
@@ -137,7 +137,7 @@
         <section class="agent-logs">
             <div class="panel">
                 <div class="panel-header">
-                    <h3>📋 Builder Agent Output</h3>
+                    <h3> Builder Agent Output</h3>
                 </div>
                 <div class="panel-body">
                     <div class="log-content" id="log-builder">Waiting for data...</div>
@@ -145,7 +145,7 @@
             </div>
             <div class="panel">
                 <div class="panel-header">
-                    <h3>🔴 Red Team Agent Output</h3>
+                    <h3> Red Team Agent Output</h3>
                 </div>
                 <div class="panel-body">
                     <div class="log-content" id="log-red-team">Waiting for data...</div>
@@ -153,7 +153,7 @@
             </div>
             <div class="panel">
                 <div class="panel-header">
-                    <h3>🔵 Blue Team Agent Output</h3>
+                    <h3> Blue Team Agent Output</h3>
                 </div>
                 <div class="panel-body">
                     <div class="log-content" id="log-blue-team">Waiting for data...</div>
@@ -210,7 +210,7 @@
                 document.getElementById('model-text').textContent = report.model || '—';
                 document.getElementById('timestamp-text').textContent = formatTimestamp(report.timestamp);
                 document.getElementById('status-text').textContent =
-                    report.final_clean ? '✅ Clean' : report.mode === 'cyclical' ? '🔄 Cyclical' : '📋 Single-Pass';
+                    report.final_clean ? ' Clean' : report.mode === 'cyclical' ? ' Cyclical' : ' Single-Pass';
             }
 
             // ── Update stats
@@ -223,7 +223,7 @@
                 document.getElementById('stat-vulns').textContent = lastCycle.vulnerabilities_found || 0;
                 document.getElementById('stat-vulns-detail').textContent = `Cycle ${lastCycle.cycle}`;
 
-                document.getElementById('stat-status').textContent = lastCycle.is_clean ? '✅' : '⚠️';
+                document.getElementById('stat-status').textContent = lastCycle.is_clean ? '' : '';
                 document.getElementById('stat-status-detail').textContent =
                     lastCycle.is_clean ? 'All clear' : 'Vulnerabilities remain';
 
@@ -309,7 +309,7 @@
                                 <td style="font-family: var(--font-mono);">${match[0]}</td>
                                 <td>—</td>
                                 <td><span class="badge medium">Unknown</span></td>
-                                <td>${lastCycle.patch_applied ? '✅ Patched' : '⏳ Pending'}</td>
+                                <td>${lastCycle.patch_applied ? ' Patched' : ' Pending'}</td>
                             `;
                             tbody.appendChild(tr);
                         }
@@ -327,7 +327,7 @@
                     }
                 } else {
                     document.getElementById('vuln-empty').innerHTML = `
-                        <div class="icon">🎉</div>
+                        <div class="icon"></div>
                         <p>No vulnerabilities found! Code is clean.</p>
                     `;
                     document.getElementById('vuln-count-badge').textContent = '0 vulns';

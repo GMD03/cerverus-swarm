@@ -53,11 +53,11 @@
             </p>
             <div class="hero-actions">
                 <a href="http://localhost:8080" class="btn btn-primary" target="_blank">
-                    <span class="btn-icon">📊</span>
+                    <span class="btn-icon"></span>
                     View Live Dashboard
                 </a>
                 <a href="#how-it-works" class="btn btn-secondary">
-                    <span class="btn-icon">▶</span>
+                    <span class="btn-icon"></span>
                     See How It Works
                 </a>
             </div>
@@ -94,7 +94,7 @@
             <div class="agents-grid">
                 <!-- Builder Agent -->
                 <div class="agent-card" data-agent="builder">
-                    <div class="agent-icon">🏗️</div>
+                    <div class="agent-icon"></div>
                     <div class="agent-step">Step 1</div>
                     <h3>Builder Agent</h3>
                     <p>Reads your source code and produces a detailed structural analysis — mapping every endpoint, data flow, and configuration. This blueprint is passed to the Red Team.</p>
@@ -103,7 +103,7 @@
 
                 <!-- Red Team Agent -->
                 <div class="agent-card" data-agent="red-team">
-                    <div class="agent-icon">🔴</div>
+                    <div class="agent-icon"></div>
                     <div class="agent-step">Step 2</div>
                     <h3>Red Team Agent</h3>
                     <p>Thinks like a hacker. Performs a full OWASP Top 10 security audit, identifying SQL injections, XSS, hardcoded credentials, and every exploitable weakness in the code.</p>
@@ -112,7 +112,7 @@
 
                 <!-- Blue Team Agent -->
                 <div class="agent-card" data-agent="blue-team">
-                    <div class="agent-icon">🔵</div>
+                    <div class="agent-icon"></div>
                     <div class="agent-step">Step 3</div>
                     <h3>Blue Team Agent</h3>
                     <p>Writes production-ready patches for every vulnerability found. Then permanently stores new prevention rules in the OWL Ontology — so the system never makes the same mistake twice.</p>
@@ -140,25 +140,25 @@
 
             <div class="pipeline">
                 <div class="pipeline-node">
-                    <div class="node-icon">💻</div>
+                    <div class="node-icon"></div>
                     <div class="node-label">Your System</div>
                     <div class="node-detail">.env file (API keys stay here)</div>
                 </div>
                 <div class="pipeline-arrow">→</div>
                 <div class="pipeline-node node-hermes">
-                    <div class="node-icon">🛡️</div>
+                    <div class="node-icon"></div>
                     <div class="node-label">Hermes Agent</div>
                     <div class="node-detail">Strips secrets, sanitizes payloads</div>
                 </div>
                 <div class="pipeline-arrow">→</div>
                 <div class="pipeline-node node-docker">
-                    <div class="node-icon">🐳</div>
+                    <div class="node-icon"></div>
                     <div class="node-label">Docker Sandbox</div>
                     <div class="node-detail">Non-root user, air-gapped</div>
                 </div>
                 <div class="pipeline-arrow">→</div>
                 <div class="pipeline-node node-model">
-                    <div class="node-icon">🧠</div>
+                    <div class="node-icon"></div>
                     <div class="node-label">Nemotron 3 Super</div>
                     <div class="node-detail">120B params via OpenRouter</div>
                 </div>
@@ -193,7 +193,7 @@
                         <span class="code-dot red"></span>
                         <span class="code-dot yellow"></span>
                         <span class="code-dot green"></span>
-                        <span class="code-title">❌ BEFORE — Vulnerable Code</span>
+                        <span class="code-title"> BEFORE — Vulnerable Code</span>
                     </div>
                     <pre class="code-block"><code><span class="code-comment"># VULNERABILITY: SQL Injection</span>
 <span class="code-comment"># User input directly in SQL query</span>
@@ -202,7 +202,7 @@
 <span class="code-keyword">def</span> <span class="code-func">search_users</span>():
     name = request.args.get(<span class="code-string">"name"</span>, <span class="code-string">""</span>)
 
-    <span class="code-danger"># ⚠️ DANGEROUS: raw string interpolation</span>
+    <span class="code-danger">#  DANGEROUS: raw string interpolation</span>
     <span class="code-danger">query = f"SELECT * FROM users</span>
     <span class="code-danger">         WHERE username = '{name}'"</span>
 
@@ -216,7 +216,7 @@
                         <span class="code-dot red"></span>
                         <span class="code-dot yellow"></span>
                         <span class="code-dot green"></span>
-                        <span class="code-title">✅ AFTER — Patched by Blue Team</span>
+                        <span class="code-title"> AFTER — Patched by Blue Team</span>
                     </div>
                     <pre class="code-block"><code><span class="code-comment"># FIXED: Parameterized query</span>
 <span class="code-comment"># User input safely bound as parameter</span>
@@ -225,7 +225,7 @@
 <span class="code-keyword">def</span> <span class="code-func">search_users</span>():
     name = request.args.get(<span class="code-string">"name"</span>, <span class="code-string">""</span>)
 
-    <span class="code-safe"># ✅ SAFE: parameterized query</span>
+    <span class="code-safe">#  SAFE: parameterized query</span>
     <span class="code-safe">query = "SELECT * FROM users</span>
     <span class="code-safe">         WHERE username = ?"</span>
 
@@ -243,7 +243,7 @@
                     <strong>SQL Injection</strong> — User input was interpolated directly into SQL query strings without parameterization. An attacker could inject <code>' OR 1=1 --</code> to dump the entire database, modify records, or escalate privileges.
                 </div>
                 <div class="finding-footer">
-                    <span>🧠 Ontology Rule Added: <em>"Always use parameterized queries with placeholders for all dynamic values."</em></span>
+                    <span> Ontology Rule Added: <em>"Always use parameterized queries with placeholders for all dynamic values."</em></span>
                 </div>
             </div>
         </div>
@@ -256,7 +256,7 @@
                 <h2>See Cerverus in Action</h2>
                 <p>The dashboard shows real-time results from the latest swarm execution — vulnerability counts, ontology rules learned, agent outputs, and cycle history.</p>
                 <a href="http://localhost:8080" class="btn btn-primary btn-large" target="_blank">
-                    <span class="btn-icon">🖥️</span>
+                    <span class="btn-icon"></span>
                     Open Live Dashboard
                 </a>
             </div>
@@ -276,7 +276,7 @@
                 <span>NVIDIA Nemotron 3 Super via OpenRouter</span>
             </div>
             <div class="footer-copy">
-                © 2026 Project Cerverus — Autonomous DevSecOps AI
+                 2026 Project Cerverus — Autonomous DevSecOps AI
             </div>
         </div>
     </footer>
