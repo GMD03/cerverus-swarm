@@ -1,17 +1,17 @@
 {
   "mode": "single-pass",
-  "timestamp": "2026-06-08T03:35:03.397798+00:00",
+  "timestamp": "2026-06-11T09:12:22.058811+00:00",
   "model": "nvidia/nemotron-3-super-120b-a12b:free",
   "cycles": [
     {
       "cycle": 1,
-      "timestamp": "2026-06-08T03:35:03.397768+00:00",
+      "timestamp": "2026-06-11T09:12:22.058703+00:00",
       "model": "nvidia/nemotron-3-super-120b-a12b:free",
       "vulnerabilities_found": 0,
       "is_clean": true,
       "patch_applied": false,
-      "builder_preview": "# Cerverus DevSecOps Swarm - Builder Agent Analysis\n\n## 1. APPLICATION OVERVIEW\nThis is a patched Flask web application designed as a security training target (Cerverus Target App). The application provides user authentication, search functionality, and a greeting endpoint. Key security improvements",
-      "red_team_preview": "CLEAN SCAN: No vulnerabilities detected.\n\nAfter thorough analysis of the provided patched Flask application source code and the Builder Agent's structural analysis, no security vulnerabilities remain. All previously identified issues from the ontology have been adequately addressed:\n\n1. **Hardcoded ",
+      "builder_preview": "**Cerverus DevSecOps Swarm \u2013 Builder Agent Analysis**  \n*File: `workspace/app.py` (patched Flask application)*  \n\n---  \n\n## 1. APPLICATION OVERVIEW  \nThe program is a small Flask web service that simulates a user\u2011management system. It provides:\n\n* A home endpoint (`/`) returning JSON meta\u2011data.  \n* ",
+      "red_team_preview": "CLEAN SCAN: No vulnerabilities detected.\n\nAfter thorough analysis of the provided patched Flask application code and considering the Builder Agent's analysis, no security vulnerabilities were detected. The code has addressed all previously identified vulnerabilities:\n\n1. **Information Exposure**: Pa",
       "blue_team_preview": "Skipped (clean scan)",
       "hermes_sanitization_events": []
     }
