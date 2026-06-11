@@ -112,11 +112,11 @@ def run_cycle(hermes: HermesGuardian, cycle_number: int, total_cycles: int) -> d
 
     builder_input = f"""Analyze the following Python source code:\n\n```python\n{source_code}\n```\n\nProvide a thorough structural analysis."""
     builder_output = hermes.dispatch(builder_agent, builder_input, "Builder Agent")
-    print(f"\n📋 Builder Analysis Preview:\n{builder_output[:500]}...\n")
+    print(f"\n Builder Analysis Preview:\n{builder_output[:500]}...\n")
 
     red_team_input = f"""Here is the source code to audit:\n\n```python\n{source_code}\n```\n\nAnd here is the Builder Agent's structural analysis:\n\n{builder_output}\n\nPreviously known vulnerabilities in our ontology:\n{json.dumps(known_vulns, indent=2) if known_vulns else "None — this is the first audit."}\n\nPerform a complete security audit. Find ALL vulnerabilities.\nIf the code is clean, state "CLEAN SCAN: No vulnerabilities detected." """
     red_team_output = hermes.dispatch(red_team_agent, red_team_input, "Red Team Agent")
-    print(f"\n🔴 Red Team Report Preview:\n{red_team_output[:500]}...\n")
+    print(f"\n Red Team Report Preview:\n{red_team_output[:500]}...\n")
 
     vuln_count = count_vulnerabilities(red_team_output)
     is_clean = "CLEAN SCAN" in red_team_output.upper() or vuln_count == 0
@@ -128,7 +128,7 @@ def run_cycle(hermes: HermesGuardian, cycle_number: int, total_cycles: int) -> d
     if not is_clean:
         blue_team_input = f"""Here is the Red Team's vulnerability report:\n\n{red_team_output}\n\nAnd here is the original source code:\n\n```python\n{source_code}\n```\n\nFor each vulnerability:\n1. Propose a concrete, production-ready fix.\n2. Create a prevention rule for the ontology knowledge base.\n3. Output the COMPLETE PATCHED FILE in a single Python code block.\n4. Output the ONTOLOGY UPDATE JSON at the end."""
         blue_team_output = hermes.dispatch(blue_team_agent, blue_team_input, "Blue Team Agent")
-        print(f"\n🔵 Blue Team Report Preview:\n{blue_team_output[:500]}...\n")
+        print(f"\n Blue Team Report Preview:\n{blue_team_output[:500]}...\n")
 
         try:
             json_start = blue_team_output.rfind("[")
@@ -149,7 +149,7 @@ def run_cycle(hermes: HermesGuardian, cycle_number: int, total_cycles: int) -> d
 
         patch_applied = apply_patches(blue_team_output, cycle_number)
     else:
-        print("\n🎉 CLEAN SCAN — No vulnerabilities detected! Skipping Blue Team.")
+        print("\n CLEAN SCAN — No vulnerabilities detected! Skipping Blue Team.")
 
     cycle_result = {
         "cycle": cycle_number,
@@ -216,17 +216,17 @@ def run_cyclical():
         save_cycle_history(cycle_history)
 
         if result["is_clean"]:
-            print(f"\n🎉 Code is CLEAN after {cycle_num} cycle(s)!")
+            print(f"\n Code is CLEAN after {cycle_num} cycle(s)!")
             break
 
         if not result["patch_applied"] and not result["is_clean"]:
-            print(f"\n⚠️  Blue Team could not produce a valid patch. Stopping.")
+            print(f"\n  Blue Team could not produce a valid patch. Stopping.")
             break
 
         if cycle_num < MAX_CYCLES:
-            print(f"\n🔄 Vulnerabilities remain. Starting cycle {cycle_num + 1}...")
+            print(f"\n Vulnerabilities remain. Starting cycle {cycle_num + 1}...")
     else:
-        print(f"\n⚠️  Reached maximum of {MAX_CYCLES} cycles. Some vulnerabilities may remain.")
+        print(f"\n  Reached maximum of {MAX_CYCLES} cycles. Some vulnerabilities may remain.")
 
     report = {
         "mode": "cyclical",
@@ -246,5 +246,5 @@ def run_cyclical():
     print("\n" + "█" * 60)
     print("█  CERVERUS SWARM — All Cycles Complete")
     print(f"█  Total cycles: {len(cycle_history)}")
-    print(f"█  Final status: {'✅ CLEAN' if report['final_clean'] else '⚠️  VULNERABILITIES REMAIN'}")
+    print(f"█  Final status: {' CLEAN' if report['final_clean'] else '  VULNERABILITIES REMAIN'}")
     print("█" * 60)

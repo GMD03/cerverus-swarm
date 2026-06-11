@@ -30,11 +30,11 @@ HERMES_API_KEY = os.getenv("HERMES_API_KEY", "")
 def validate_env():
     """Ensure required environment variables are set."""
     if not OPENROUTER_API_KEY or OPENROUTER_API_KEY == "your_openrouter_api_key_here":
-        print("❌ ERROR: OPENROUTER_API_KEY is not set in .env")
+        print(" ERROR: OPENROUTER_API_KEY is not set in .env")
         print("   Please add your OpenRouter API key to the .env file.")
         sys.exit(1)
-    print(f"✅ API Key loaded (ends with ...{OPENROUTER_API_KEY[-6:]})")
-    print(f"✅ Model: {OPENROUTER_MODEL_ID}")
+    print(f" API Key loaded (ends with ...{OPENROUTER_API_KEY[-6:]})")
+    print(f" Model: {OPENROUTER_MODEL_ID}")
 
 
 # ── File I/O helpers ────────────────────────────────────────────────
@@ -111,20 +111,20 @@ def apply_patches(blue_team_output: str, cycle_number: int) -> bool:
     )
 
     if not code_blocks:
-        print("  ⚠️  No code blocks found in Blue Team output. Skipping patch.")
+        print("    No code blocks found in Blue Team output. Skipping patch.")
         return False
 
     patched_code = max(code_blocks, key=len).strip()
 
     if len(patched_code) < 50 or "flask" not in patched_code.lower():
-        print("  ⚠️  Extracted code doesn't look like a valid Flask app. Skipping patch.")
+        print("    Extracted code doesn't look like a valid Flask app. Skipping patch.")
         return False
 
     backup_target(cycle_number)
 
     path = Path(TARGET_APP_PATH)
     path.write_text(patched_code, encoding="utf-8")
-    print(f"  ✅ Patched {path.name} ({len(patched_code)} chars)")
+    print(f"   Patched {path.name} ({len(patched_code)} chars)")
     return True
 
 

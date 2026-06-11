@@ -37,9 +37,9 @@ def run_hermes():
         if HERMES_API_KEY:
             health_req.add_header("Authorization", f"Bearer {HERMES_API_KEY}")
         urllib.request.urlopen(health_req, timeout=5)
-        print("✅ Hermes Agent gateway is reachable")
+        print(" Hermes Agent gateway is reachable")
     except (urllib.error.URLError, OSError) as e:
-        print(f"⚠️  Cannot reach Hermes gateway at {HERMES_GATEWAY}: {e}")
+        print(f"  Cannot reach Hermes gateway at {HERMES_GATEWAY}: {e}")
         print("   Falling back to standalone (camel-ai) mode...")
         run_single_pass()
         return
@@ -95,7 +95,7 @@ IMPORTANT: Output the complete patched file and ontology JSON at the end."""
         method="POST",
     )
 
-    print("\n🛡️ >>> Dispatching to Hermes Agent via gateway...")
+    print("\n >>> Dispatching to Hermes Agent via gateway...")
 
     try:
         with urllib.request.urlopen(req, timeout=600) as resp:
@@ -104,7 +104,7 @@ IMPORTANT: Output the complete patched file and ontology JSON at the end."""
 
             # Sanitize the response
             safe_content = hermes.sanitize(content)
-            print(f"🛡️  Hermes Agent completed ({len(safe_content)} chars)")
+            print(f"  Hermes Agent completed ({len(safe_content)} chars)")
 
             # Try to extract and apply patches
             vuln_count = count_vulnerabilities(safe_content)
@@ -126,7 +126,7 @@ IMPORTANT: Output the complete patched file and ontology JSON at the end."""
                         ontology[0]["audit_model"] = "hermes-agent"
                         save_ontology(ontology)
                 except (json.JSONDecodeError, IndexError):
-                    print("  ⚠️ Could not extract ontology rules from Hermes output")
+                    print("   Could not extract ontology rules from Hermes output")
 
             # Save audit report
             report = {
@@ -151,12 +151,12 @@ IMPORTANT: Output the complete patched file and ontology JSON at the end."""
             print(f" Full audit report saved: {report_path}")
 
     except urllib.error.HTTPError as e:
-        print(f"❌ Hermes gateway returned error {e.code}: {e.read().decode()}")
+        print(f" Hermes gateway returned error {e.code}: {e.read().decode()}")
         print("   Falling back to standalone mode...")
         run_single_pass()
         return
     except Exception as e:
-        print(f"❌ Hermes gateway error: {e}")
+        print(f" Hermes gateway error: {e}")
         print("   Falling back to standalone mode...")
         run_single_pass()
         return

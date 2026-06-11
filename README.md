@@ -13,8 +13,8 @@ Cerverus deploys three specialized AI agents in an automated security pipeline:
 | Agent | Role | Output |
 |-------|------|--------|
 | **Builder** | Analyzes code structure, endpoints, and data flows | Structural analysis report |
-| 🔴 **Red Team** | Attacks the code — finds OWASP Top 10 vulnerabilities | Vulnerability report (VULN-001, etc.) |
-| 🔵 **Blue Team** | Patches every vulnerability and updates the knowledge base | Patched code + OWL Ontology rules |
+|  **Red Team** | Attacks the code — finds OWASP Top 10 vulnerabilities | Vulnerability report (VULN-001, etc.) |
+|  **Blue Team** | Patches every vulnerability and updates the knowledge base | Patched code + OWL Ontology rules |
 
 ### Security Pipeline
 ```

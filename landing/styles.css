@@ -163,7 +163,9 @@ a {
 }
 
 .logo-icon {
-    font-size: 1.5rem;
+    width: 2rem;
+    height: auto;
+    object-fit: contain;
 }
 
 .logo-text {

@@ -87,8 +87,8 @@ def api_health():
 
 if __name__ == "__main__":
     port = int(os.getenv("DASHBOARD_PORT", "8080"))
-    print(f"\n🖥️  Cerverus Dashboard starting on http://localhost:{port}")
+    print(f"\n  Cerverus Dashboard starting on http://localhost:{port}")
     print(f"   Config dir: {CONFIG_DIR.resolve()}")
-    print(f"   Report: {'✅ Found' if REPORT_PATH.exists() else '❌ Not found'}")
-    print(f"   Ontology: {'✅ Found' if ONTOLOGY_PATH.exists() else '❌ Not found'}")
+    print(f"   Report: {' Found' if REPORT_PATH.exists() else ' Not found'}")
+    print(f"   Ontology: {' Found' if ONTOLOGY_PATH.exists() else ' Not found'}")
     app.run(host="0.0.0.0", port=port, debug=False)
